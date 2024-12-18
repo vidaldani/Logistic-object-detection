@@ -28,10 +28,6 @@ import cv2
 import numpy as np
 from cv_bridge import CvBridge
 import tf_transformations as tf
-from sklearn.decomposition import PCA  # Import PCA for orientation calculation
-
-from std_msgs.msg import Float32
-import time
 
 class YoloDepthSegmentationNode(Node):
 
@@ -42,10 +38,6 @@ class YoloDepthSegmentationNode(Node):
 
         # Initialize a CvBridge to convert between ROS and OpenCV images
         self.bridge = CvBridge()
-
-        # Publishers for inference times
-        self.depth_filtering_time_publisher = self.create_publisher(Float32, "/depth_filtering_time", 10)
-        self.orientation_time_publisher = self.create_publisher(Float32, "/orientation_time", 10)
 
         # Subscribe to the depth image topic
         self.depth_subscriber = self.create_subscription(
@@ -108,18 +100,9 @@ class YoloDepthSegmentationNode(Node):
                 # cv2.rectangle(self.depth_image, (left, top), (right, bottom), (0, 255, 0), 2)
                 # self.visualize_depth_image(self.depth_image, 'Full Depth Image')
                 
-                # Start the depth filtering timer
-                start_time_depth = time.time()
-
                 # Apply depth filtering
                 filtered_image = self.apply_depth_filter(cropped_depth_image)
                 
-                # End the depth filtering timer and calculate time
-                depth_filtering_time = time.time() - start_time_depth
-                self.get_logger().info(f"Depth Filtering Time: {depth_filtering_time:.4f} seconds")
-                self.depth_filtering_time_publisher.publish(Float32(data=depth_filtering_time))
-
-
                 # Display the filtered depth image for debugging
                 # self.visualize_depth_image(filtered_image, 'Filtered Depth Image')
                 
@@ -169,32 +152,6 @@ class YoloDepthSegmentationNode(Node):
 
         return quaternion
     
-    # New function to calculate orientation using PCA
-    def calculate_orientation_from_bbox_pca(self, x, y, z):
-        """
-        Calculate the orientation of the 3D bounding box using PCA.
-        Args:
-            x, y, z: Coordinates of points inside the bounding box.
-        Returns:
-            quaternion: Orientation quaternion of the object.
-        """
-        # Stack the points into a single array for PCA
-        points = np.column_stack((x, y, z))
-
-        # Perform PCA to find the principal axes
-        pca = PCA(n_components=3)
-        pca.fit(points)
-
-        # The first principal component gives the major axis (dominant direction of the object)
-        direction = pca.components_[0]
-
-        # Calculate the yaw angle (rotation around the Y-axis)
-        yaw = np.arctan2(direction[2], direction[0])  # XZ plane
-
-        # Convert yaw into a quaternion (we assume no roll/pitch, so it's just yaw)
-        quaternion = tf.quaternion_from_euler(0, yaw, 0)
-
-        return quaternion
 
     def publish_3d_marker(self, filtered_image, top, left, class_name, conf):
         if filtered_image is None or self.camera_info is None:
@@ -241,17 +198,11 @@ class YoloDepthSegmentationNode(Node):
         pose.position.y = central_y
         pose.position.z = central_z
         
-        # Calculate the orientation using PCA and time it
-        start_time_orientation = time.time()
-        # quaternion = self.calculate_orientation_from_bbox_pca(x, y, z)
-        # quaternion =  self.calculate_orientation_from_bbox(min_x, z_min_x, x_min_z, min_z)
-        orientation_time = time.time() - start_time_orientation
-        self.get_logger().info(f"Orientation Calculation Time: {orientation_time:.4f} seconds")
-        self.orientation_time_publisher.publish(Float32(data=orientation_time))
-        pose.orientation.x = 0.0 #quaternion[0]
-        pose.orientation.y = 0.0 #quaternion[1]
-        pose.orientation.z = 0.0 #quaternion[2]
-        pose.orientation.w = 1.0 #quaternion[3]
+        quaternion =  self.calculate_orientation_from_bbox(min_x, z_min_x, x_min_z, min_z)
+        pose.orientation.x = quaternion[0]
+        pose.orientation.y = quaternion[1]
+        pose.orientation.z = quaternion[2]
+        pose.orientation.w = quaternion[3]
         
         # Create an instance of the BoundingBox3D message
         bounding_box_msg = BoundingBox3D()

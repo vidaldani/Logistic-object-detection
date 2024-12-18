@@ -11,11 +11,11 @@ def generate_launch_description():
         description='The working frame for 3D marker publisher'
     )
 
-    # Define the node to run yolo_depth_segmentation.py
-    yolo_depth_segmentation_node = Node(
+    # Define the node to run yolo_sam_segmentation.py
+    yolo_sam_segmentation_node = Node(
         package='turtlebot3_recognition',  # Replace with your actual package name
-        executable='yolo_depth_segmentation.py',
-        name='yolo_depth_segmentation',
+        executable='yolo_sam_segmentation.py',
+        name='yolo_sam_segmentation',
         output='screen',
         emulate_tty=True
     )
@@ -32,29 +32,9 @@ def generate_launch_description():
         }]
     )
 
-    # Add the data_collector_node
-    data_collector_node = Node(
-        package='turtlebot3_recognition',
-        executable='data_collector_node.py',
-        name='data_collector_node',
-        output='screen',
-        emulate_tty=True
-    )
-
-    # Add the inference_time_collector_node
-    inference_time_collector_node = Node(
-        package='turtlebot3_recognition',  # Replace with your actual package name
-        executable='inference_time_collector_node.py',  # Name of your time collector node script
-        name='inference_time_collector_node',
-        output='screen',
-        emulate_tty=True
-    )
-    
     # Create the launch description with both nodes
     return LaunchDescription([
         working_frame_arg,
-        yolo_depth_segmentation_node,
-        marker_publisher_node,
-        data_collector_node,
-        inference_time_collector_node
+        yolo_sam_segmentation_node,
+        marker_publisher_node
     ])

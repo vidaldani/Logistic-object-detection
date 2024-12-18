@@ -55,8 +55,18 @@ install(
   scripts/yolov8_ros2_subscriber.py
   scripts/yolo_depth_segmentation.py
   scripts/bounding_box_marker_publisher.py
+  scripts/yolo_sam_filter_segmentation.py
+  scripts/yolo_sam_segmentation.py
+  scripts/yolo_sam2_filter_segmentation.py
+  scripts/yolo_sam2_segmentation.py
+  scripts/data_collector_node.py
+  scripts/inference_time_collector_node.py
   launch/launch_yolov8.launch.py
   launch/launch_3d_node.launch.py
+  launch/launch_3d_sam_filter.launch.py
+  launch/launch_3d_sam.launch.py
+  launch/launch_3d_sam2_filter.launch.py
+  launch/launch_3d_sam2.launch.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

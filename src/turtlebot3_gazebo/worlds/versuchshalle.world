@@ -1,5 +1,11 @@
 <sdf version='1.7'>
   <world name='default'>
+
+    <!-- Added plugin for gazebo_ros_state -->
+    <plugin name="gazebo_ros_state" filename="libgazebo_ros_state.so">
+      <update_rate>50.0</update_rate>
+    </plugin>
+    
     <light name='sun' type='directional'>
       <cast_shadows>1</cast_shadows>
       <pose>0 0 10 0 -0 0</pose>

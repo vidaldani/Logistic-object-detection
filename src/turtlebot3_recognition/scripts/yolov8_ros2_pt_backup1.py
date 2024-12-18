@@ -27,9 +27,6 @@ from ament_index_python.packages import get_package_share_directory
 from turtlebot3_recognition.msg import InferenceResult
 from turtlebot3_recognition.msg import Yolov8Inference
 
-import time
-from std_msgs.msg import Float32
-
 bridge = CvBridge()
 
 class Camera_subscriber(Node):
@@ -56,22 +53,10 @@ class Camera_subscriber(Node):
         self.yolov8_pub = self.create_publisher(Yolov8Inference, "/Yolov8_Inference", 1)
         self.img_pub = self.create_publisher(Image, "/inference_result", 1)
 
-        # YOLO inference time publisher
-        self.inference_time_publisher = self.create_publisher(Float32, "/yolo_inference_time", 10)
-
     def camera_callback(self, data):
-        # Start the timer
-        start_time = time.time()
 
         img = bridge.imgmsg_to_cv2(data, "bgr8")
         results = self.model(img)
-
-        # End the timer and calculate inference time
-        inference_time = time.time() - start_time
-        self.get_logger().info(f"YOLO Inference Time: {inference_time:.4f} seconds")
-
-        # Publish the YOLO inference time
-        self.inference_time_publisher.publish(Float32(data=inference_time))
 
         self.yolov8_inference.header.frame_id = "inference"
         self.yolov8_inference.header.stamp = camera_subscriber.get_clock().now().to_msg()

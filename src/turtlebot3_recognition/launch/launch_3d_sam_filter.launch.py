@@ -11,11 +11,11 @@ def generate_launch_description():
         description='The working frame for 3D marker publisher'
     )
 
-    # Define the node to run yolo_depth_segmentation.py
-    yolo_depth_segmentation_node = Node(
+    # Define the node to run yolo_sam_filter_segmentation.py
+    yolo_sam_filter_segmentation_node = Node(
         package='turtlebot3_recognition',  # Replace with your actual package name
-        executable='yolo_depth_segmentation.py',
-        name='yolo_depth_segmentation',
+        executable='yolo_sam_filter_segmentation.py',
+        name='yolo_sam_filter_segmentation',
         output='screen',
         emulate_tty=True
     )
@@ -53,7 +53,7 @@ def generate_launch_description():
     # Create the launch description with both nodes
     return LaunchDescription([
         working_frame_arg,
-        yolo_depth_segmentation_node,
+        yolo_sam_filter_segmentation_node,
         marker_publisher_node,
         data_collector_node,
         inference_time_collector_node
