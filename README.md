@@ -36,7 +36,7 @@ This project contains a Gazebo simulation with all the [LOCO](https://github.com
 
 1. Install ultralytics (if it is already installed jump to step 2)
    ```console
-   pip3 install ultralytics
+   pip3 install ultralytics==8.3.40
    ```
 2. On a different terminal launch logistic object detection
    ```console
@@ -46,7 +46,7 @@ This project contains a Gazebo simulation with all the [LOCO](https://github.com
    ```
 3. Open rviz to visualize the inference results. The configuration file can be found in the folder /turtlebot3_recognition/rviz
    ```console
-   rviz2
+   rviz2 -d $(pwd)/src/turtlebot3_ws/src/turtlebot3_recognition/rviz/rviz.rviz
    ```
 5. In a new terminal launch the keyboard teleoperation to move the robot around and perform object detection
    ```console
