@@ -39,8 +39,8 @@ class Camera_subscriber(Node):
         
         weights = os.path.join(
         get_package_share_directory('turtlebot3_recognition'),
-        'scripts',
-        'best.pt'
+        'models',
+        'yolov11n.pt'
     )
         self.model = YOLO(weights)
 
