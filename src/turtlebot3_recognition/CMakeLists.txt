@@ -43,6 +43,7 @@ endif()
 
 install(
   DIRECTORY
+    models
     scripts
     launch
   DESTINATION
